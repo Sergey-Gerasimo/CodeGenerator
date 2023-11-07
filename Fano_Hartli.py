@@ -43,12 +43,16 @@ def get_Haffman(chars:list) -> dict:
     def get_Haffman_tree(chars:list, code:str='') -> tuple: 
         if len(chars) == 2: return chars
         chars.sort(key=lambda x: x[1], reverse=True)
-        chars = chars[:-2] + [((chars[-1][0], chars[-2][0]), chars[-1][1] + chars[-2][1])]
+        chars = chars[:-2] + [((chars[-1][0], chars[-2][0], chars[-1][1] + chars[-2][1]), chars[-1][1] + chars[-2][1])]
         return get_Haffman_tree(chars)
 
     tree = get_Haffman_tree(chars)
-    tree = (tree[0][0], tree[1][0])
     
+    tree_ = (tree[0][0], tree[1][0])
+    tree = Tree()
+
+    tree.add(tree_)
+
     def __find_nodes(tree: tuple, code:str='') -> dict: 
         nonlocal codes 
         if len(tree) == 1: return 
@@ -62,9 +66,8 @@ def get_Haffman(chars:list) -> dict:
         __find_nodes(tree[0], code=code+'0')
         __find_nodes(tree[1], code=code+'1')
 
-    __find_nodes(tree)
-    tree = Tree()
-    tree.add(codes)
+    __find_nodes(tree_)
+    
     tree.show()
     return codes 
 
