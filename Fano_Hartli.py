@@ -2,9 +2,8 @@ def get_codes(stat:dict) -> dict:
     stat = list(stat.items()) 
     
     stat.sort(key=lambda x: x[1], reverse=True)
-    #print(get_Haffman_tree(stat))
-    print(get_code(stat))
-
+    print(get_Haffman(stat))
+    print(get_Hartli(stat))
 
 def append_dict(key, item, _dict: dict):
     if key not in _dict:
@@ -12,7 +11,7 @@ def append_dict(key, item, _dict: dict):
     else: 
         _dict[key] += item 
 
-def get_code(chars:list) -> dict: 
+def get_Hartli(chars:list) -> dict: 
     codes = dict() 
     def get_Fano_Hartli(chars: tuple, code:str="") -> list: 
         nonlocal codes
@@ -36,20 +35,32 @@ def get_code(chars:list) -> dict:
     get_Fano_Hartli(chars)
     return codes 
 
-def get_code(chars:list) -> dict: 
+def get_Haffman(chars:list) -> dict: 
     codes = dict() 
 
     def get_Haffman_tree(chars:list, code:str='') -> tuple: 
         if len(chars) == 2: return chars
         chars.sort(key=lambda x: x[1], reverse=True)
         chars = chars[:-2] + [((chars[-1][0], chars[-2][0]), chars[-1][1] + chars[-2][1])]
-        print(chars)
         return get_Haffman_tree(chars)
-    
+
     tree = get_Haffman_tree(chars)
+    tree = (tree[0][0], tree[1][0])
 
+    def __find_nodes(tree: tuple, code:str='') -> dict: 
+        nonlocal codes 
+        if len(tree) == 1: return 
 
+        if type(tree[0]) == str: 
+            append_dict(tree[0], code+'0', codes)
 
+        if type(tree[1]) == str: 
+            append_dict(tree[1], code+'1', codes)
+
+        __find_nodes(tree[0], code=code+'0')
+        __find_nodes(tree[1], code=code+'1')
+
+    __find_nodes(tree)
     return codes 
 
 if __name__ == "__main__": 
