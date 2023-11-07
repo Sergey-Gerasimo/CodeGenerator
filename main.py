@@ -33,9 +33,6 @@ def exam() -> None:
     if OutputPattern.match(SavePath) is None:
         print("Файл с текстом должен быть в формате docx", file=sys.stderr)
 
-    
-
-
 
 if __name__ == "__main__":
     exam()
