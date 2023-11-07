@@ -4,7 +4,6 @@ LANGUAGE = 'АВБГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ0123
 def GetStatistic(path_to_file: str) -> dict: 
     """ Функция для сбора сатистики по файлу"""
 
-
     with open(path_to_file, "r", encoding='utf-8') as file:
         text = ''
         for i in file:
