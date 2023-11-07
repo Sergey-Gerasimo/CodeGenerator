@@ -3,7 +3,6 @@ import sys
 import math 
 sys.setrecursionlimit(10000)
 
-
 class Node: 
     def __init__(self, *args, data:any=None, right=None, left=None, **kwargs) -> None: 
         self.data = data
@@ -69,17 +68,20 @@ class Tree:
     def __init__(self, *args, **kwargs) -> None: 
         self.root = Node()
         self.root.data ="main"
-
+        if len(args) > 0: 
+            self.add(args[0])
+            self.dict = self.get_dict()
 
     def add(self, codes:tuple):
-        self.root.data = "main"
+        self.root = Node(data='main')
         self.root.left = Node(data=f'0\n{codes[0][2]}')
         self.root.right = Node(data=f'1\n{codes[1][2]}')
-        self._add(codes[0], self.root.left)
-        self._add(codes[1], self.root.right)
+        self.__add(codes[0], self.root.left)
+        self.__add(codes[1], self.root.right)
+        self.dict = self.get_dict()
 
         
-    def _add(self, codes:tuple, root:Node): 
+    def __add(self, codes:tuple, root:Node): 
         if type(codes) == str : 
             root.data = codes
             root.left = None
@@ -88,11 +90,11 @@ class Tree:
         
         if root.left is None:
             root.left = Node(data=f'0\n{codes[2]}')
-        self._add(codes[0], root.left)
+        self.__add(codes[0], root.left)
         
         if root.right is None:
             root.right = Node(data=f'1\n{codes[2]}')
-        self._add(codes[1], root.right)
+        self.__add(codes[1], root.right)
 
 
 
@@ -101,3 +103,17 @@ class Tree:
         center = (450, 50)
         win.add_tree(self.root, center)
         win.mainloop()
+
+    def get_dict(self) -> dict: 
+        out = dict() 
+
+        def __get_items(nd:Node, code:str=''): 
+            if nd.left is None and nd.right is None: 
+                out[nd.data[-1]] = code
+                return 
+            
+            __get_items(nd.right, code=code+'1')
+            __get_items(nd.left, code=code+'0')
+
+        __get_items(self.root)
+        return out 
