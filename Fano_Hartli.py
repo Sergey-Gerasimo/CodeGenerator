@@ -1,35 +1,4 @@
-class Node: 
-    def __init__(self, *args, **kwargs) -> None: 
-        self.data = None
-        self.right = None
-        self.left = None
-
-
-class Tree: 
-    def __init__(self, *args, **kwargs) -> None: 
-        self.root = Node()
-
-    def __add(self, code:str, char:str, root:Node) -> None: 
-        if not code: 
-            return 
-    
-        if char[-1] == '0': 
-            if root.left is None:
-                node = Node()
-                node.data = code[:-1]
-                root.left = node
-            
-            self.__add(code[:-1], char, root.left)
-
-        if char[-1] == '1': 
-            if root.right is None:
-                node = Node()
-                node.data = code[:-1]
-                root.right = node
-            
-            self.__add(code[:-1], char, root.right)
-
-            
+from show import * 
 
 def get_codes(stat:dict) -> dict: 
     stat = list(stat.items()) 
@@ -94,6 +63,9 @@ def get_Haffman(chars:list) -> dict:
         __find_nodes(tree[1], code=code+'1')
 
     __find_nodes(tree)
+    tree = Tree()
+    tree.add(codes)
+    tree.show()
     return codes 
 
 if __name__ == "__main__": 
