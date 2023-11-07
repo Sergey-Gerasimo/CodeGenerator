@@ -15,12 +15,14 @@ class Point:
         self.y = y
 
 class tkTree(tk.Tk): 
-    def __init__(self, *args, width:int=600, height:int=600,**kwargs) -> None: 
-        super(*args, **kwargs)
+    def __init__(self, *args, width:int=2000, height:int=1200,**kwargs) -> None: 
+        tk.Tk.__init__(self)
+        
         self.width = width
         self.height = height
-        self.canvas = tk.Canvas(width=width, height=height)
+        self.canvas = tk.Canvas(width=width, height=height, bg="white")
         self.ovalsize = (120, 60)
+        self.canvas.pack()
 
     def __get_xy(self, center:tuple) -> tuple: 
         x1 = center[0] - self.ovalsize[0]//2
@@ -30,22 +32,22 @@ class tkTree(tk.Tk):
         return Point(x1, y1), Point(x2, y2)
 
     def add_tree(self, tree:Node, center:tuple) -> None:
+        
+        if tree.left is not None: 
+            self.canvas.create_line(center[0], center[1], center[0] - 110, center[1]+100 ,arrow=tk.LAST, fill='black')
+            self.add_tree(tree.left, center=(center[0]-150, center[1]+150))
+
+        if tree.right is not None: 
+            self.canvas.create_line(center[0], center[1], center[0] + 110, center[1]+100 ,arrow=tk.LAST, fill='black')
+            self.add_tree(tree.right, center=(center[0]+150, center[1]+150))
+
+        p1, p2 = self.__get_xy(center)
+        self.canvas.create_oval(p1.x, p1.y, p2.x, p2.y, fill='grey70', outline='white')
+
         if (tree.left is None) and (tree.right is None): 
             return 
 
-        p1, p2 = self.__get_xy(center)
-        if tree.left is not None: 
-            self.canvas.create_line(center[0], center[1], center[0] - 100, center[1]+100 ,arrow=tk.LAST, fill='black')
-        if tree.right is not None: 
-            self.canvas.create_line(center[0], center[1], center[0] + 100, center[1]+100 ,arrow=tk.LAST, fill='black')
-
-        self.canvas.create_oval(p1.x, p1.y, p2.x, p2.y, fill='grey70', outline='white')
-
-        if not (tree.left is None): 
-            self.add_tree(tree.left, center=(center[0]-150, center[1]+150))
         
-        if not (tree.right is None):
-            self.add_tree(tree.right, center=(center[0]+150, center[1]+150))
 
 class Tree: 
     def __init__(self, *args, **kwargs) -> None: 
@@ -79,6 +81,6 @@ class Tree:
 
     def show(self) -> None: 
         win = tkTree()
-        center = (300, 50)
+        center = (450, 50)
         win.add_tree(self.root, center)
         win.mainloop()
