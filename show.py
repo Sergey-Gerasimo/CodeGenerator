@@ -63,7 +63,6 @@ class tkTree(tk.Tk):
             return 
 
         
-
 class Tree: 
     def __init__(self, *args, **kwargs) -> None: 
         self.root = Node()

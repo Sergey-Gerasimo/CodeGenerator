@@ -1,12 +1,12 @@
 import argparse
 import statFunc as sf
-from ouputs import CreateWordTable, GetTable
+from ouputs import  *
 import sys 
 import re 
 import os 
 
 InputPattern = re.compile(r"[a-zA-Z0-9_.+-//\\]{1,}.txt")
-OutputPattern = re.compile(r"[a-zA-Z0-9_.+-//\\]{1,}.docx")
+OutputPattern = re.compile(r"[a-zA-Z0-9_.+-//\\]{1,}.xlsx")
 
 parser = argparse.ArgumentParser(
     prog="Генератор кода", 
@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(
 
 
 parser.add_argument("TxtFile", help="Путь до txt файла")
-parser.add_argument("-fn", '--FileName', help="Путь до сохраняемого файла документа word (должен быть docx)")
+parser.add_argument("-fn", '--FileName', help="Путь до сохраняемого файла документа excel(должен быть xlsx)")
 
 args = parser.parse_args()
 
@@ -43,6 +43,7 @@ if __name__ == "__main__":
         print("Ошибка при декодировании текстового файла", file=sys.stderr)
         exit()
 
-    table = GetTable(stat, sm)
-    table = CreateWordTable(table) 
+    table = Table(stat, sm)
     table.save(args.FileName)
+    
+

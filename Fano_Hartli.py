@@ -1,11 +1,11 @@
 from show import * 
 
-def get_codes(stat:dict) -> dict: 
+def get_codes(stat:dict) -> tuple[Tree, ]: 
     stat = list(stat.items()) 
     
     stat.sort(key=lambda x: x[1], reverse=True)
-    print(get_Haffman(stat).dict)
-    print(get_Hartli(stat).dict)
+    return get_Haffman(stat), get_Hartli(stat)
+    
 
 def append_dict(key, item, _dict: dict):
     if key not in _dict:
@@ -14,7 +14,7 @@ def append_dict(key, item, _dict: dict):
         _dict[key] += item 
 
 def get_Hartli(chars:list) -> Tree: 
-    def get_Fano_Hartli(chars: tuple, code:str="") -> tuple: 
+    def get_Fano_Hartli(chars: tuple) -> tuple: 
         if len(chars) == 1: return chars[0][0]
 
         sm1 = 0 # сумма вероятностей слева
