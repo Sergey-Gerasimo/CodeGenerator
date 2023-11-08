@@ -78,6 +78,21 @@ class Table(Workbook):
         else: 
             self.ws2[f"A{i+3}"] = "Значение средней информации в битах"
             self.ws2[f"B{i+3}"] = self.nfloat(Isr)
+        
+        self.__set2(2, 50, 5)
+
+    def __set2(self, a:int, b:int, column:int, deep:int=0): 
+        for i in range(a, b): 
+            code1 = self.ws2[f"D{i}"].value
+            code2 = self.ws2[f"D{i+1}"].value
+            
+            if code1[deep] != code2[deep]: 
+                double = Side(border_style="medium", color="000000")
+                self.ws2[f"{self.get_norm_pos(column)}{i}"].border = Border(bottom=double)
+                self.__set2(a, i, column+1, deep+1)
+                self.__set2(i+1, b, column+1, deep+1)
+        else: 
+            return 
 
         
 

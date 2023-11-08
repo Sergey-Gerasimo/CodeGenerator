@@ -21,7 +21,8 @@ class tkTree(tk.Tk):
         tk.Tk.__init__(self)
         self.width = width
         self.height = height
-        self.lenght = 5
+        self.ungle = math.pi
+        self.lenght = 375
         self.canvas = tk.Canvas(width=width, height=height, bg="white")
         self.ovalsize = (40, 20)
         self.canvas.pack()
@@ -33,8 +34,8 @@ class tkTree(tk.Tk):
         y2 = center[1] + self.ovalsize[1]//2
         return Point(x1, y1), Point(x2, y2)
 
-    def calc_lenght(self, a:float, b:float, deep:int) -> float: 
-        return a/(2**deep), b/(2**deep)
+    def calc_unlg(self, a:float, deep:int) -> float: 
+        return a/(deep+2)
     
     def save(self, fileName:str) -> None:
         self.canvas.postscript(self.canvas, file = fileName + '.eps')
@@ -43,7 +44,7 @@ class tkTree(tk.Tk):
 
 
     def add_tree(self, tree:Node, center:tuple, deep:int=0) -> None:
-        a, b = self.calc_lenght(800, 400, deep+1)
+        a, b = self.lenght*math.sin(self.calc_unlg(self.ungle, deep))/(deep+1), self.lenght*math.cos(self.calc_unlg(self.ungle, deep))/(deep+1)
         if tree.left is not None: 
             self.canvas.create_line(center[0], center[1], 
                                     center[0] - a, center[1]+b,arrow=tk.LAST, fill='black')
