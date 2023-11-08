@@ -10,15 +10,33 @@ from openpyxl.styles import (
 
 class Table(Workbook): 
     LANG = sorted('QWERTYUIOPASDFGHJKLMNBVCXZ')
-    def __init__(self,stat:dict, sum_of_chars:int,*args, title:str='', **kwargs) -> None:
+    def __init__(self,stat:dict, sum_of_chars:int,*args, title:str='', show=False, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+
+        stat_ = list(stat.items())
+        stat_.sort(key=lambda x: x[1], reverse=True)
+        
+        if show: 
+            
+            hartli = get_Hartli(stat_)
+            haffman = get_Haffman(stat_)
+            hartli.show()
+            haffman.show()
+        
+        hartli = hartli.dict
+        haffman = haffman.dict
+        
         self.ws1 = self.active
         self.ws1.title = "Часть1"
         self.ws2 = self.create_sheet("Часть2")
         self.ws3 = self.create_sheet("Часть3.1")
         self.ws3_2 = self.create_sheet("Часть3")
+        self.ws2_1 = self.create_sheet("Хартли")
+        self.ws3_3 = self.create_sheet("Хаффман")
         self.setws1(stat, ["ID", "Символ", "Код символа", "Число вхождений символа в текст", "Вероятность вхождения символа (рi)", "Ii"], sum_of_chars)
         self.setws2(stat, ["ID", "Символ", "Вероятность", "Код"], sum_of_chars)
+        self.setws(self.ws2_1,hartli, ['шаг', 'комбинация', 'кол-во символов','символ'], sum_of_chars)
+        self.setws(self.ws3_3,haffman, ['шаг', 'комбинация', 'кол-во символов','символ'], sum_of_chars)
         self.setws3_1(stat, ["ID", "Символ", "Вероятность", "Код"], sum_of_chars)
         self.setws3_2(stat, ["ID", "Символы", "Вероятности"], sum_of_chars)
         
@@ -54,6 +72,41 @@ class Table(Workbook):
             self.ws1[f"E{i+5}"] = "Энтропия источника (Iср)"
             self.ws1[f"F{i+5}"] = self.nfloat(Isr)
 
+    def setws(self, ws, codes:dict, header:list, sum_of_chars:int) -> None:
+        ws.append(header)
+        def calc_count(a:str, b:list) -> int: 
+            count = 0
+            for i in b: 
+                if (len(a) < len(i)) and (a == i[:len(a)]): 
+                    count += 1
+
+            return count 
+        word = 'ЯУСТАЛДЕЛАТЬЭТО'
+        out = ''
+        for i in word:
+            out += codes[i]
+        
+        codes1 = dict(map(lambda x: x[::-1], codes.items()))
+        res = ''
+        i = 0
+        count = 0
+        while out: 
+            i += 1
+            count += 1
+            key = out[:i]
+            ls = [count, key]
+            if key in codes1: 
+                res += codes1[key]
+                out = out[i:]
+                ls += ['1', codes1[key]]
+                i = 0
+            else: 
+                ls += [calc_count(key, list(codes1.keys())), '-']
+            ws.append(ls)
+            
+
+        
+
     def get_norm_pos(self, a:int) -> str: 
         out = ''
         while a: 
@@ -68,7 +121,7 @@ class Table(Workbook):
         
         codes = get_Hartli(stat)
         #codes.save("output")
-        codes.show()
+        #codes.show()
         codes = codes.dict
         Isr = 0 
         stat = list(map(lambda x: (x[0], x[1]/sum_of_chars), stat))
@@ -104,7 +157,7 @@ class Table(Workbook):
         stat = list(map(lambda x: (x[0], x[1]/sum_of_chars), stat))
         codes = get_Haffman(stat)
         #codes.save('output2')
-        codes.show()
+        #codes.show()
         codes = codes.dict
 
         Isr = 0 

@@ -4,6 +4,8 @@ from ouputs import  *
 import sys 
 import re 
 import os 
+from Fano_Hartli import * 
+
 
 InputPattern = re.compile(r"[a-zA-Z0-9_.+-//\\]{1,}.txt")
 OutputPattern = re.compile(r"[a-zA-Z0-9_.+-//\\]{1,}.xlsx")
@@ -15,6 +17,7 @@ parser = argparse.ArgumentParser(
 
 
 parser.add_argument("TxtFile", help="Путь до txt файла")
+parser.add_argument('-s', '--show', help="Флаг показа дерева", default=False)
 parser.add_argument("-fn", '--FileName', help="Путь до сохраняемого файла документа excel(должен быть xlsx)")
 
 args = parser.parse_args()
@@ -44,7 +47,7 @@ if __name__ == "__main__":
         exit()
 
     
-    table = Table(stat, sm)
+    table = Table(stat, sm, show=args.show)
     table.save(args.FileName)
     
 
