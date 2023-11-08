@@ -16,7 +16,7 @@ class Table(Workbook):
         self.ws1.title = "Часть1"
         self.ws2 = self.create_sheet("Часть2")
         self.ws3 = self.create_sheet("Часть3.1")
-        self.ws3_2 = self.create_sheet("Часть3.2")
+        self.ws3_2 = self.create_sheet("Часть3")
         self.setws1(stat, ["ID", "Символ", "Код символа", "Число вхождений символа в текст", "Вероятность вхождения символа (рi)", "Ii"], sum_of_chars)
         self.setws2(stat, ["ID", "Символ", "Вероятность", "Код"], sum_of_chars)
         self.setws3_1(stat, ["ID", "Символ", "Вероятность", "Код"], sum_of_chars)
@@ -66,7 +66,10 @@ class Table(Workbook):
         stat = list(stat.items())
         stat.sort(key=lambda x: x[1], reverse=True)
         
-        codes = get_Hartli(stat).dict
+        codes = get_Hartli(stat)
+        #codes.save("output")
+        codes.show()
+        codes = codes.dict
         Isr = 0 
         stat = list(map(lambda x: (x[0], x[1]/sum_of_chars), stat))
         for i in range(len(stat)):
@@ -94,15 +97,15 @@ class Table(Workbook):
         else: 
             return 
 
-        
-
     def setws3_1(self, stat:dict, header:list, sum_of_chars:int) -> None: 
         self.ws3.append(header)
         stat = list(stat.items())
         stat.sort(key=lambda x: x[1], reverse=True)
         stat = list(map(lambda x: (x[0], x[1]/sum_of_chars), stat))
-        codes = get_Haffman(stat).dict
-
+        codes = get_Haffman(stat)
+        #codes.save('output2')
+        codes.show()
+        codes = codes.dict
 
         Isr = 0 
         for i in range(len(stat)):
@@ -130,12 +133,14 @@ class Table(Workbook):
             self.ws3_2.append([i+1, char, self.nfloat(probab)])
 
         p = 4
+        count = 0 
         while len(stat) > 1: 
+            count += 1
             stat.sort(key=lambda x: x[1], reverse=True)
             stat = stat[:-2] + [(stat[-1][0] + stat[-2][0], stat[-1][1]+stat[-2][1])]
             p1 = self.get_norm_pos(p)
             p2 = self.get_norm_pos(p+1)
-            self.ws3_2[f"{p2}{2}"] = f'Шаг\n{p-3}'
+            self.ws3_2[f"{p2}{2}"] = f'Шаг\n{count}'
             for i in range(len(stat)):
                 self.ws3_2[f'{p1}{i+3}'] = stat[i][0]
                 self.ws3_2[f"{p2}{i+3}"] = stat[i][1]

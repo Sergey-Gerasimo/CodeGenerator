@@ -38,7 +38,8 @@ class tkTree(tk.Tk):
         return a/(deep+2)
     
     def save(self, fileName:str) -> None:
-        self.canvas.postscript(self.canvas, file = fileName + '.eps')
+        self.canvas.update()
+        self.canvas.postscript(file = fileName + '.eps')
         img = Image.open(fileName + '.eps') 
         img.save(fileName + '.png', 'png')
 
@@ -64,7 +65,7 @@ class tkTree(tk.Tk):
 
         p1, p2 = self.__get_xy(center)
         self.canvas.create_oval(p1.x, p1.y, p2.x, p2.y, fill='grey70', outline='white')
-        self.canvas.create_text(center[0], center[1], text=tree.data, justify=tk.CENTER, font="Verdana 14", fill="black")
+        self.canvas.create_text(center[0], center[1], text=tree.data[0], justify=tk.CENTER, font="Verdana 14", fill="black")
 
         if (tree.left is None) and (tree.right is None): 
             return 
@@ -102,13 +103,16 @@ class Tree:
             root.right = Node(data=f'1\n{codes[2]}')
         self.__add(codes[1], root.right)
 
-
+    def save(self, filename:str) -> None: 
+        win = tkTree()
+        center = (725, 10)
+        win.add_tree(self.root, center)
+        win.save(filename)
 
     def show(self) -> None: 
         win = tkTree()
         center = (750, 10)
         win.add_tree(self.root, center)
-        #win.save("./out")
         win.mainloop()
 
     def get_dict(self) -> dict: 

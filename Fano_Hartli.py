@@ -23,7 +23,6 @@ def get_Hartli(chars:list) -> Tree:
             sm2 = sum(map(lambda x: x[1], chars[i:]))
             if sm1 >= sm2: 
                 return get_Fano_Hartli(chars[:(i-1) if i > 1 else i]), get_Fano_Hartli(chars[(i-1) if i > 1 else i:]), 0
-
     return Tree(get_Fano_Hartli(chars))
 
 def get_Haffman(chars:list) -> Tree: 
@@ -35,7 +34,6 @@ def get_Haffman(chars:list) -> Tree:
 
     tree = get_Haffman_tree(chars)
     tree = Tree((tree[0][0], tree[1][0]))
-    tree.show()
     return tree
 
 if __name__ == "__main__": 
