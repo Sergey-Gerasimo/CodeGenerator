@@ -9,7 +9,7 @@ from openpyxl.styles import (
 
 
 class Table(Workbook): 
-    LANG = sorted('QWERTYUIOPLKJHGFDSAZXCVBNM')
+    LANG = sorted('QWERTYUIOPASDFGHJKLMNBVCXZ')
     def __init__(self,stat:dict, sum_of_chars:int,*args, title:str='', **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.ws1 = self.active
@@ -54,10 +54,13 @@ class Table(Workbook):
             self.ws1[f"E{i+5}"] = "Энтропия источника (Iср)"
             self.ws1[f"F{i+5}"] = self.nfloat(Isr)
 
-    def __set_underlines(self, deep:int) -> None: 
-        ...
+    def get_norm_pos(self, a:int) -> str: 
+        out = ''
+        while a: 
+            out += self.LANG[((a-1)%len(self.LANG))]
+            a = (a-1)//len(self.LANG)
+        return out[::-1]
         
-
     def setws2(self, stat:dict, header:list, sum_of_chars:int) -> None: 
         self.ws2.append(header)
         stat = list(stat.items())
@@ -76,13 +79,15 @@ class Table(Workbook):
             self.ws2[f"A{i+3}"] = "Значение средней информации в битах"
             self.ws2[f"B{i+3}"] = self.nfloat(Isr)
 
+        
+
     def setws3_1(self, stat:dict, header:list, sum_of_chars:int) -> None: 
         self.ws3.append(header)
         stat = list(stat.items())
         stat.sort(key=lambda x: x[1], reverse=True)
-
-        codes = get_Haffman(stat).dict
         stat = list(map(lambda x: (x[0], x[1]/sum_of_chars), stat))
+        codes = get_Haffman(stat).dict
+
 
         Isr = 0 
         for i in range(len(stat)):
@@ -98,6 +103,7 @@ class Table(Workbook):
         self.ws3_2.append(header)
         self.ws3_2.merge_cells('A1:A2')
         self.ws3_2.merge_cells('B1:B2')
+        self.ws3_2.merge_cells('C1:C2')
         
         stat = list(stat.items())
         stat = list(map(lambda x: (x[0], x[1]/sum_of_chars), stat))
@@ -107,4 +113,18 @@ class Table(Workbook):
             char = stat[i][0]
             probab = stat[i][1]
             self.ws3_2.append([i+1, char, self.nfloat(probab)])
-    
+
+        p = 4
+        while len(stat) > 1: 
+            stat.sort(key=lambda x: x[1], reverse=True)
+            stat = stat[:-2] + [(stat[-1][0] + stat[-2][0], stat[-1][1]+stat[-2][1])]
+            p1 = self.get_norm_pos(p)
+            p2 = self.get_norm_pos(p+1)
+            self.ws3_2[f"{p2}{2}"] = f'Шаг\n{p-3}'
+            for i in range(len(stat)):
+                self.ws3_2[f'{p1}{i+3}'] = stat[i][0]
+                self.ws3_2[f"{p2}{i+3}"] = stat[i][1]
+            p += 2
+        else: 
+            self.ws3_2.merge_cells(f"{self.get_norm_pos(4)}1:{self.get_norm_pos(p)}1")
+            self.ws3_2[f'{self.get_norm_pos(4)}1'] = 'Вспомагательные вычисления'
