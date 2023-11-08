@@ -1,6 +1,7 @@
 import tkinter as tk 
 import sys 
 import math 
+from PIL import Image
 sys.setrecursionlimit(10000)
 
 class Node: 
@@ -18,12 +19,11 @@ class Point:
 class tkTree(tk.Tk): 
     def __init__(self, *args, width:int=2000, height:int=1200,**kwargs) -> None: 
         tk.Tk.__init__(self)
-        self.degrees = (math.sin(math.pi/3), math.sin(math.pi/5))
         self.width = width
         self.height = height
-        self.lenght = 200
+        self.lenght = 5
         self.canvas = tk.Canvas(width=width, height=height, bg="white")
-        self.ovalsize = (120, 60)
+        self.ovalsize = (40, 20)
         self.canvas.pack()
 
     def __get_xy(self, center:tuple) -> tuple: 
@@ -33,31 +33,37 @@ class tkTree(tk.Tk):
         y2 = center[1] + self.ovalsize[1]//2
         return Point(x1, y1), Point(x2, y2)
 
-    def calc_lenght(self, a:float, deep:int) -> float: 
-        return a*self.degrees[deep%2]
+    def calc_lenght(self, a:float, b:float, deep:int) -> float: 
+        return a/(2**deep), b/(2**deep)
+    
+    def save(self, fileName:str) -> None:
+        self.canvas.postscript(self.canvas, file = fileName + '.eps')
+        img = Image.open(fileName + '.eps') 
+        img.save(fileName + '.png', 'png')
+
 
     def add_tree(self, tree:Node, center:tuple, deep:int=0) -> None:
-        
+        a, b = self.calc_lenght(800, 400, deep+1)
         if tree.left is not None: 
             self.canvas.create_line(center[0], center[1], 
-                                    center[0] - self.calc_lenght(self.lenght, deep), center[1]+self.calc_lenght(self.lenght, deep),arrow=tk.LAST, fill='black')
+                                    center[0] - a, center[1]+b,arrow=tk.LAST, fill='black')
             
-            self.add_tree(tree.left, center=(center[0]-self.calc_lenght(self.lenght, deep), 
-                                             center[1]+self.calc_lenght(self.lenght, deep)), 
+            self.add_tree(tree.left, center=(center[0]-a, 
+                                             center[1]+b), 
                                              deep=deep+1)
 
         if tree.right is not None: 
-            self.canvas.create_line(center[0], center[1], center[0] + self.calc_lenght(self.lenght, deep), 
-                                    center[1]+self.calc_lenght(self.lenght, deep),
+            self.canvas.create_line(center[0], center[1], center[0] + a, 
+                                    center[1]+b,
                                     arrow=tk.LAST, fill='black')
             
-            self.add_tree(tree.right, center=(center[0]+self.calc_lenght(self.lenght, deep), 
-                                              center[1]+self.calc_lenght(self.lenght, deep)), 
+            self.add_tree(tree.right, center=(center[0]+a, 
+                                              center[1]+b), 
                                               deep=deep+1)
 
         p1, p2 = self.__get_xy(center)
         self.canvas.create_oval(p1.x, p1.y, p2.x, p2.y, fill='grey70', outline='white')
-        self.canvas.create_text(center[0], center[1], text=tree.data, justify=tk.CENTER, font="Verdana 14")
+        self.canvas.create_text(center[0], center[1], text=tree.data, justify=tk.CENTER, font="Verdana 14", fill="black")
 
         if (tree.left is None) and (tree.right is None): 
             return 
@@ -99,8 +105,9 @@ class Tree:
 
     def show(self) -> None: 
         win = tkTree()
-        center = (450, 50)
+        center = (750, 10)
         win.add_tree(self.root, center)
+        #win.save("./out")
         win.mainloop()
 
     def get_dict(self) -> dict: 
