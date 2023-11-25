@@ -31,21 +31,15 @@ def exam() -> None:
 
     if InputPattern.match(args.TxtFile) is None: 
         print("Файл с текстом должен быть в формате txt", file=sys.stderr)
-        return -1 
+        exit(-1)
     
     if OutputPattern.match(SavePath) is None:
         print("Файл должен быть в формате xlsx", file=sys.stderr)
 
 
 if __name__ == "__main__":
-    exam()
-    try: 
-        stat, sm = sf.GetStatistic(args.TxtFile)
-
-    except: 
-        print("Ошибка при декодировании текстового файла", file=sys.stderr)
-        exit()
-
+    out = exam()
+    stat, sm = sf.GetStatistic(args.TxtFile)
     
     table = Table(stat, sm, show=args.show)
     table.save(args.FileName)

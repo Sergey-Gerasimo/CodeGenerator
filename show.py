@@ -1,8 +1,8 @@
 import tkinter as tk 
 import sys 
 import math 
-from PIL import Image
-sys.setrecursionlimit(10000)
+from PIL import Image, ImageDraw
+sys.setrecursionlimit(10000000)
 
 class Node: 
     def __init__(self, *args, data:any=None, right=None, left=None, **kwargs) -> None: 
@@ -69,7 +69,6 @@ class tkTree(tk.Tk):
 
         if (tree.left is None) and (tree.right is None): 
             return 
-
         
 class Tree: 
     def __init__(self, *args, **kwargs) -> None: 
@@ -103,17 +102,48 @@ class Tree:
             root.right = Node(data=f'1\n{codes[2]}')
         self.__add(codes[1], root.right)
 
-    def save(self, filename:str) -> None: 
-        win = tkTree()
-        center = (725, 10)
-        win.add_tree(self.root, center)
-        win.save(filename)
-
     def show(self) -> None: 
         win = tkTree()
-        center = (750, 10)
+        center = (1024*2, 400)
         win.add_tree(self.root, center)
         win.mainloop()
+    
+
+    def save(self, filename:str="out.jpeg", size:tuple=(4*1024, 4*720), bg="#FFFFFF") -> None: 
+        im = Image.new("RGB",size, bg)
+        draw = ImageDraw.Draw(im)
+        
+        elipseSize:tuple=(50, 20)
+        elipseColor:str="#FFAA00"
+        lineColor:str="#000000"
+        textColor = "#000000"
+
+        
+        def _calcPos(xy:tuple, deep:int, maxAngle:float=math.pi/2, lenght:float=550) -> tuple: 
+            if deep < 3: 
+                return (xy[0] + math.sin(maxAngle/(deep+1))*lenght/(math.log2(deep+1)+1)*2, xy[1] + math.cos(maxAngle/(deep+1))*lenght/(math.log2(deep+1)+1)*2)
+            else: 
+                return (xy[0] + math.sin(maxAngle/((math.log2(deep+1)+1)))*lenght/(math.log2(deep+1)), xy[1] + math.cos(maxAngle/(math.log2(deep+1)+1))*lenght/(math.log2(deep+1)+1))
+
+        def __save(tree: Node, *args, deep:int=0, xy:tuple=(size[0]//2, 10),**wargs) -> None: 
+            nonlocal draw, elipseColor, elipseSize, lineColor, textColor
+
+            if tree.left is not None: 
+                nextPoint = _calcPos(xy, deep, maxAngle=-math.pi/2)
+                draw.line((xy, nextPoint), lineColor)
+                __save(tree.left, deep=deep+1, xy=nextPoint)
+
+            if tree.right is not None: 
+                nextPoint = _calcPos(xy, deep, maxAngle=math.pi/2)
+                draw.line((xy, nextPoint), lineColor)
+                __save(tree.right, deep=deep+1, xy=nextPoint)
+
+            draw.ellipse(((xy[0]-elipseSize[0], xy[1] - elipseSize[1]), (xy[0]+elipseSize[0], xy[1] + elipseSize[1])), elipseColor)
+            draw.text((xy[0]-elipseSize[0]/2, xy[1] - elipseSize[1]/2), tree.data,align='center', fill=textColor, size=50)
+
+        __save(self.root, (size[0]//2, 10))
+        im.save(filename)
+
 
     def get_dict(self) -> dict: 
         out = dict() 

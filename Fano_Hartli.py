@@ -14,7 +14,8 @@ def append_dict(key, item, _dict: dict):
 
 def get_Hartli(chars:list) -> Tree: 
     def get_Fano_Hartli(chars: tuple) -> tuple: 
-        if len(chars) == 1: return chars[0][0]
+        if len(chars) == 1: 
+            return chars[0][0]
         chars = sorted(chars, key=lambda x: x[1], reverse=True)
         sm1 = 0 # сумма вероятностей слева
         sm2 = 0 # сумма вероятностей спарава
@@ -22,7 +23,7 @@ def get_Hartli(chars:list) -> Tree:
             sm1 = sum(map(lambda x: x[1], chars[:i]))
             sm2 = sum(map(lambda x: x[1], chars[i:]))
             if sm1 >= sm2: 
-                return get_Fano_Hartli(chars[:(i-1) if i > 1 else i]), get_Fano_Hartli(chars[(i-1) if i > 1 else i:]), 0
+                return get_Fano_Hartli(chars[:((i+1) if i < 1 else i)]), get_Fano_Hartli(chars[((i+1) if i < 1 else i):]), 0
     return Tree(get_Fano_Hartli(chars))
 
 def get_Haffman(chars:list) -> Tree: 

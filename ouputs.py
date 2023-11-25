@@ -12,16 +12,21 @@ class Table(Workbook):
     LANG = sorted('QWERTYUIOPASDFGHJKLMNBVCXZ')
     def __init__(self,stat:dict, sum_of_chars:int,*args, title:str='', show=False, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-
+        print("Данные успешно получены")
+        print(f"количесво символов в тексте: {sum_of_chars}")
         stat_ = list(stat.items())
         stat_.sort(key=lambda x: x[1], reverse=True)
         
         if show: 
-            
             hartli = get_Hartli(stat_)
+            print("Код Хартли успешно сформирован")
+            # print(hartli.dict)
             haffman = get_Haffman(stat_)
-            hartli.show()
-            haffman.show()
+            print("Код Хаффмана успешно сформирован")
+            # print(haffman.dict)s
+
+            hartli.save(filename="hartli.bmp")
+            haffman.save(filename='haffman.bmp')
         
         hartli = hartli.dict
         haffman = haffman.dict
@@ -35,8 +40,8 @@ class Table(Workbook):
         self.ws3_3 = self.create_sheet("Хаффман")
         self.setws1(stat, ["ID", "Символ", "Код символа", "Число вхождений символа в текст", "Вероятность вхождения символа (рi)", "Ii"], sum_of_chars)
         self.setws2(stat, ["ID", "Символ", "Вероятность", "Код"], sum_of_chars)
-        self.setws(self.ws2_1,hartli, ['шаг', 'комбинация', 'кол-во символов','символ'], sum_of_chars)
-        self.setws(self.ws3_3,haffman, ['шаг', 'комбинация', 'кол-во символов','символ'], sum_of_chars)
+        self.setws(self.ws2_1,hartli, ['шаг', 'комбинация', 'кол-во символов','символ'], sum_of_chars, 'Хартли')
+        self.setws(self.ws3_3,haffman, ['шаг', 'комбинация', 'кол-во символов','символ'], sum_of_chars, 'Хаффман')
         self.setws3_1(stat, ["ID", "Символ", "Вероятность", "Код"], sum_of_chars)
         self.setws3_2(stat, ["ID", "Символы", "Вероятности"], sum_of_chars)
         
@@ -51,6 +56,7 @@ class Table(Workbook):
         stat_.sort(key=lambda x: x[1])
         pv = 0 
         Isr = 0 
+        
         self.ws1.append(header)
         for i in range(len(stat_)):
             char = stat_[i][0]
@@ -72,7 +78,7 @@ class Table(Workbook):
             self.ws1[f"E{i+5}"] = "Энтропия источника (Iср)"
             self.ws1[f"F{i+5}"] = self.nfloat(Isr)
 
-    def setws(self, ws, codes:dict, header:list, sum_of_chars:int) -> None:
+    def setws(self, ws, codes:dict, header:list, sum_of_chars:int, type:str) -> None:
         ws.append(header)
         def calc_count(a:str, b:list) -> int: 
             count = 0
@@ -81,7 +87,7 @@ class Table(Workbook):
                     count += 1
 
             return count 
-        word = 'ЯУСТАЛДЕЛАТЬЭТО'
+        word = 'У МЕНЯ ЕСТЬ ДЖИП ДЖИП'
         out = ''
         for i in word:
             out += codes[i]
@@ -89,6 +95,7 @@ class Table(Workbook):
         codes1 = dict(map(lambda x: x[::-1], codes.items()))
         res = ''
         i = 0
+        print(f'{type}: {word} -> {out} -> {word}')
         count = 0
         while out: 
             i += 1
