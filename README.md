@@ -8,7 +8,7 @@
 
 > Пример применения 
 > ``` bash
-> python3 main.py tihiy-don-_knigi-1-i-2_.txt -fn out.xlsx --show Ture
+> python3 main.py tihiy-don-_knigi-1-i-2_.txt -fn out.xlsx
 > ```
 
 Отчет по ЛР7: https://docs.google.com/document/d/15OaKaxQ56gyPWf4CIqp4pNZAH230PJgv1yRGsRIQBqQ/edit?usp=sharing
